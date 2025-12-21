@@ -1,4 +1,12 @@
 <section class="Dashboard">
-    <h1>Crypto Dashboard</h1>
+    <h1>Top Crypto Currencies</h1>
     <p>Track live cryptocurrency prices and market trends</p>
+
+
+    <ul *ngIf="coins$ | async as coins">
+    <li *ngFor="let coin of coins; trackBy: trackById">
+      <strong>{{ coin.name }}</strong>
+      - ₹{{ coin.current_price }}
+    </li>
+  </ul>
 </section>
