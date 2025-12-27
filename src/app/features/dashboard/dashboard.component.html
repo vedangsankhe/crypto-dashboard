@@ -1,12 +1,15 @@
 <section class="Dashboard">
-    <h1>Top Crypto Currencies</h1>
-    <p>Track live cryptocurrency prices and market trends</p>
+  <h1>Top Crypto Currencies</h1>
+  <p>Track live cryptocurrency prices and market trends</p>
 
+  <p *ngIf="loading">Loading cryptocurrencies...</p>
 
-    <ul *ngIf="coins$ | async as coins">
-    <li *ngFor="let coin of coins; trackBy: trackById">
-      <strong>{{ coin.name }}</strong>
-      - ₹{{ coin.current_price }}
-    </li>
-  </ul>
+  <ng-container *ngIf="coins$ | async as coins">
+    <ul *ngIf="!loading">
+      <li *ngFor="let coin of coins; trackBy: trackById">
+        <strong>{{ coin.name }}</strong>
+        - ₹{{ coin.current_price }}
+      </li>
+    </ul>
+  </ng-container>
 </section>

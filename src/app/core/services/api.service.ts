@@ -7,9 +7,14 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-  private readonly BASE_URL = 'https://api.coingecko.com/api/v3/'
+  private readonly BASE_URL = 'https://api.coingecko.com/api/v3/' 
+  // revents accidental modification API 
+  // URLs should not change at runtime
 
   constructor(private http: HttpClient) {}
+
+  //The return type is an Observable<any[]>, 
+  //meaning it will return an observable stream of an array of data about the coins.
 
   getCoins(): Observable<any[]> {
     return this.http.get<any[]>(
