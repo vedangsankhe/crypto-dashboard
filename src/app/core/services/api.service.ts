@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { coin } from './models/coin.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +17,8 @@ export class ApiService {
   //The return type is an Observable<any[]>, 
   //meaning it will return an observable stream of an array of data about the coins.
 
-  getCoins(): Observable<any[]> {
-    return this.http.get<any[]>(
+  getCoins(): Observable<coin[]> {
+    return this.http.get<coin[]>(
       `${this.BASE_URL}/coins/markets`,
       {
         params: {

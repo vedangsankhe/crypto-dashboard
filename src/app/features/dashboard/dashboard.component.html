@@ -4,8 +4,12 @@
 
   <p *ngIf="loading">Loading cryptocurrencies...</p>
 
+  <p *ngIf="error" class="error">
+  {{ error }}
+</p>
+
   <ng-container *ngIf="coins$ | async as coins">
-    <ul *ngIf="!loading">
+    <ul *ngIf="!loading && !error">
       <li *ngFor="let coin of coins; trackBy: trackById">
         <strong>{{ coin.name }}</strong>
         - ₹{{ coin.current_price }}
