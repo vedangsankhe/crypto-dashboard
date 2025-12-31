@@ -2,6 +2,10 @@
   <h1>Top Crypto Currencies</h1>
   <p>Track live cryptocurrency prices and market trends</p>
 
+  <button (click)="loadCoins()" [disabled]="loading">
+  Refresh
+</button>
+
   <p *ngIf="loading">Loading cryptocurrencies...</p>
 
   <p *ngIf="error" class="error">

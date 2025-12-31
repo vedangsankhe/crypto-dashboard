@@ -22,18 +22,24 @@ export class DashboardComponent {
 
   constructor(private apiService: ApiService) {}
 
-  ngOnInit(): void {
-    this.coins$ = this.apiService.getCoins().pipe(
-      catchError((err) => {
-        this.error = "Failed to load cryptocurrency data, please try again later";
-        return of([]); //returning empty array so UI doesnt break
+  loadCoins(): void {
+  this.loading = true;
+  this.error = null;
 
-      }),
-
+  this.coins$ = this.apiService.getCoins().pipe(
+    catchError((err) => {
+      this.error = 'Failed to load cryptocurrency data. Please try again later.';
+      return of([]);
+    }),
     finalize(() => {
       this.loading = false;
     })
   );
+}
+
+
+  ngOnInit(): void {
+    this.loadCoins();
   }
 
   trackById(index: number, coin: coin) {
