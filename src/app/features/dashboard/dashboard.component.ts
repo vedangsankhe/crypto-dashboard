@@ -22,6 +22,10 @@ export class DashboardComponent {
 
   constructor(private apiService: ApiService) {}
 
+   ngOnInit(): void {
+    this.loadCoins();
+  }
+
   loadCoins(): void {
   this.loading = true;
   this.error = null;
@@ -37,10 +41,6 @@ export class DashboardComponent {
   );
 }
 
-
-  ngOnInit(): void {
-    this.loadCoins();
-  }
 
   trackById(index: number, coin: coin) {
   return coin.id;
