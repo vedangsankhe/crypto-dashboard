@@ -5,10 +5,11 @@ import { finalize } from 'rxjs';
 import { Observable } from 'rxjs';
 import { catchError, of } from 'rxjs';
 import { coin } from '../../core/services/models/coin.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -20,10 +21,12 @@ export class DashboardComponent {
 
   error: string | null = null;
 
+  searchText = '';
+
   constructor(private apiService: ApiService) {}
 
    ngOnInit(): void {
-    this.loadCoins();
+    this.loadCoins()
   }
 
   loadCoins(): void {
@@ -45,5 +48,16 @@ export class DashboardComponent {
   trackById(index: number, coin: coin) {
   return coin.id;
 }
+
+filterCoins(coins: coin[]): coin[] {
+  if (!this.searchText) {
+    return coins;
+  }
+
+  return coins.filter((coin) =>
+    coin.name.toLowerCase().includes(this.searchText.toLowerCase())
+  );
+}
+
 
 }

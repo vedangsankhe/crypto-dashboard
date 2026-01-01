@@ -2,6 +2,12 @@
   <h1>Top Crypto Currencies</h1>
   <p>Track live cryptocurrency prices and market trends</p>
 
+  <input 
+  type="text"
+  placeholder="Search Coin..."
+  [(ngModel)]="searchText"
+  />
+
   <button (click)="loadCoins()" [disabled]="loading">
   Refresh
 </button>
@@ -14,7 +20,7 @@
 
   <ng-container *ngIf="coins$ | async as coins">
     <ul *ngIf="!loading && !error">
-      <li *ngFor="let coin of coins; trackBy: trackById">
+      <li *ngFor="let coin of filterCoins(coins); trackBy: trackById">
         <strong>{{ coin.name }}</strong>
         - ₹{{ coin.current_price }}
       </li>
