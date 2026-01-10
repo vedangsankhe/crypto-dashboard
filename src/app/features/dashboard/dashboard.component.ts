@@ -28,6 +28,8 @@ export class DashboardComponent {
 
   debouncedSearchText = '';
 
+  currentPage = 1;
+
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -47,7 +49,7 @@ export class DashboardComponent {
     this.loading = true;
     this.error = null;
 
-    this.coins$ = this.apiService.getCoins().pipe(
+    this.coins$ = this.apiService.getCoins(this.currentPage).pipe(
       catchError((err) => {
         this.error = 'Failed to load cryptocurrency data. Please try again later.';
         return of([]);
@@ -74,6 +76,19 @@ export class DashboardComponent {
       .includes(this.debouncedSearchText.toLowerCase())
   );
 }
+
+nextPage() {
+  this.currentPage++;
+  this.loadCoins();
+}
+
+prevPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.loadCoins();
+  }
+}
+
 
 
 }

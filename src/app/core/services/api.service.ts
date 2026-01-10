@@ -17,7 +17,7 @@ export class ApiService {
   //The return type is an Observable<any[]>, 
   //meaning it will return an observable stream of an array of data about the coins.
 
-  getCoins(): Observable<coin[]> {
+  getCoins(page: number): Observable<coin[]> {
     return this.http.get<coin[]>(
       `${this.BASE_URL}/coins/markets`,
       {
@@ -25,7 +25,7 @@ export class ApiService {
           vs_currency: 'inr',
           order: 'market_cap_desc',
           per_page: '10',
-          page: '1',
+          page: page.toString(),
           sparkline: 'true'
         }
       }

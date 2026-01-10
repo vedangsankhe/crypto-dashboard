@@ -24,6 +24,19 @@
         <strong>{{ coin.name }}</strong>
         - ₹{{ coin.current_price }}
       </li>
+
+      <div class="pagination">
+  <button (click)="prevPage()" [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <span>Page {{ currentPage }}</span>
+
+  <button (click)="nextPage()">
+    Next
+  </button>
+</div>
+
     </ul>
   </ng-container>
 
