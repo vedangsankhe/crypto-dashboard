@@ -19,6 +19,10 @@
       <li *ngFor="let coin of filterCoins(coins); trackBy: trackById">
         <strong>{{ coin.name }}</strong>
         - ₹{{ coin.current_price }}
+
+        <button (click)="toggleWatchlist(coin)">
+          {{ isInWatchlist(coin.id) ? 'Remove' : 'Add to Watchlist' }}
+        </button>
       </li>
 
       <div class="pagination">

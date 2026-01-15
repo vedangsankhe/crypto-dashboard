@@ -7,12 +7,15 @@ import { catchError, of } from 'rxjs';
 import { coin } from '../../core/services/models/coin.model';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { WatchlistService } from '../../core/services/watchlist.service';
+
 
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {
 
@@ -30,7 +33,10 @@ export class DashboardComponent {
 
   currentPage = 1;
 
-  constructor(private apiService: ApiService) { }
+  constructor(
+    private apiService: ApiService,
+    private watchlistService: WatchlistService
+  ) { }
 
   ngOnInit(): void {
     this.loadCoins()
@@ -89,6 +95,16 @@ export class DashboardComponent {
     }
   }
 
+toggleWatchlist(coin: any) {
+  if (this.watchlistService.isInWatchlist(coin.id)) {
+    this.watchlistService.removeFromWatchlist(coin.id);
+  } else {
+    this.watchlistService.addToWatchlist(coin);
+  }
+}
 
+isInWatchlist(id: string): boolean {
+  return this.watchlistService.isInWatchlist(id);
+}
 
 }
