@@ -65,29 +65,29 @@ export class DashboardComponent {
     return coin.id;
   }
 
- filterCoins(coins: coin[]): coin[] {
-  if (!this.debouncedSearchText) {
-    return coins;
+  filterCoins(coins: coin[]): coin[] {
+    if (!this.debouncedSearchText) {
+      return coins;
+    }
+
+    return coins.filter((coin) =>
+      coin.name
+        .toLowerCase()
+        .includes(this.debouncedSearchText.toLowerCase())
+    );
   }
 
-  return coins.filter((coin) =>
-    coin.name
-      .toLowerCase()
-      .includes(this.debouncedSearchText.toLowerCase())
-  );
-}
-
-nextPage() {
-  this.currentPage++;
-  this.loadCoins();
-}
-
-prevPage() {
-  if (this.currentPage > 1) {
-    this.currentPage--;
+  nextPage() {
+    this.currentPage++;
     this.loadCoins();
   }
-}
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadCoins();
+    }
+  }
 
 
 
