@@ -1,4 +1,18 @@
-<section class="watchlist">
-    <h1>watchlist</h1>
-    <p>Your saved cryptocurrencies will appear here</p>
+<section>
+  <h1>Your Watchlist</h1>
+
+  <p *ngIf="coins.length === 0">
+    No coins added yet.
+  </p>
+
+  <ul *ngIf="coins.length > 0">
+    <li *ngFor="let coin of coins">
+      <strong>{{ coin.name }}</strong>
+      - ₹{{ coin.current_price }}
+
+      <button (click)="remove(coin.id)">
+        Remove
+      </button>
+    </li>
+  </ul>
 </section>
