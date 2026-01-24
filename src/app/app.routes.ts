@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { WatchlistComponent } from './features/watchlist/watchlist.component';
+import { watchlistGuard } from './core/guards/watchlist.guard';
 
 export const routes: Routes = [
     {
@@ -9,6 +10,7 @@ export const routes: Routes = [
     },
     {
         path: 'watchlist',
-        component: WatchlistComponent
+        component: WatchlistComponent,
+        canActivate: [watchlistGuard]
     }
 ];
