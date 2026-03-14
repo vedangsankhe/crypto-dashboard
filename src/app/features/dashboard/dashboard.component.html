@@ -1,43 +1,133 @@
-<section class="Dashboard">
-  <h1>Top Crypto Currencies</h1>
-  <p>Track live cryptocurrency prices and market trends</p>
+<section class="dashboard">
 
-  <input type="text" placeholder="Search Coin..." [formControl]="searchControl" />
+  <!-- Header -->
+  <div class="dashboard__header">
+    <h1>Crypto Markets</h1>
+    <p>// Live prices · INR · Top 10 by market cap</p>
+  </div>
 
-  <button (click)="loadCoins()" [disabled]="loading">
-    Refresh
-  </button>
+  <!-- Controls -->
+  <div class="dashboard__controls">
+    <div class="search-wrapper">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        placeholder="Search coin..."
+        [formControl]="searchControl"
+        autocomplete="off"
+      />
+    </div>
 
-  <p *ngIf="loading">Loading cryptocurrencies...</p>
+    <button class="btn-refresh" (click)="loadCoins()" [disabled]="loading">
+      <span [class.spin]="loading">↻</span>
+      {{ loading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
 
-  <p *ngIf="error" class="error">
-    {{ error }}
-  </p>
+  <!-- Loading -->
+  <div class="state-loading" *ngIf="loading">
+    <div class="loader"></div>
+    <p>Fetching market data...</p>
+  </div>
 
+  <!-- Error -->
+  <div class="state-error" *ngIf="error && !loading">
+    <span class="error-icon">⚠</span>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Table -->
   <ng-container *ngIf="coins$ | async as coins">
-    <ul *ngIf="!loading && !error">
-      <li *ngFor="let coin of filterCoins(coins); trackBy: trackById">
-        <strong>{{ coin.name }}</strong>
-        - ₹{{ coin.current_price }}
+    <div class="coins-table-wrapper" *ngIf="!loading && !error">
+      <table class="coins-table">
+        <thead>
+          <tr>
+            <th class="col-rank">#</th>
+            <th>Coin</th>
+            <th class="align-right">Price</th>
+            <th class="align-right">24h Change</th>
+            <th class="align-right col-market-cap">Market Cap</th>
+            <th class="align-right col-sparkline">7d Chart</th>
+            <th class="align-right">Watchlist</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let coin of filterCoins(coins); trackBy: trackById">
 
-        <button (click)="toggleWatchlist(coin)">
-          {{ isInWatchlist(coin.id) ? 'Remove' : 'Add to Watchlist' }}
-        </button>
-      </li>
+            <!-- Rank -->
+            <td class="col-rank">
+              <span class="rank-badge">{{ coin.market_cap_rank }}</span>
+            </td>
 
+            <!-- Coin -->
+            <td>
+              <div class="coin-cell">
+                <img [src]="coin.image" [alt]="coin.name" />
+                <div class="coin-info">
+                  <span class="coin-name">{{ coin.name }}</span>
+                  <span class="coin-symbol">{{ coin.symbol }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Price -->
+            <td class="align-right">
+              <span class="price">₹{{ coin.current_price | number:'1.2-2' }}</span>
+            </td>
+
+            <!-- 24h Change -->
+            <td class="align-right">
+              <span class="change-badge"
+                [class.positive]="coin.price_change_percentage_24h >= 0"
+                [class.negative]="coin.price_change_percentage_24h < 0">
+                {{ coin.price_change_percentage_24h >= 0 ? '▲' : '▼' }}
+                {{ coin.price_change_percentage_24h | number:'1.2-2' }}%
+              </span>
+            </td>
+
+            <!-- Market Cap -->
+            <td class="align-right col-market-cap">
+              <span class="market-cap">₹{{ coin.market_cap | number:'1.0-0' }}</span>
+            </td>
+
+            <!-- Sparkline -->
+            <td class="align-right col-sparkline">
+              <svg class="sparkline" [attr.viewBox]="'0 0 80 32'" preserveAspectRatio="none">
+                <polyline
+                  [attr.points]="getSparklinePoints(coin.sparkline_in_7d.price)"
+                  fill="none"
+                  [attr.stroke]="coin.price_change_percentage_24h >= 0 ? '#63e6be' : '#f87171'"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </td>
+
+            <!-- Watchlist -->
+            <td class="align-right">
+              <button class="btn-watchlist"
+                [class.in-watchlist]="isInWatchlist(coin.id)"
+                (click)="toggleWatchlist(coin)">
+                {{ isInWatchlist(coin.id) ? '★ Saved' : '☆ Watch' }}
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
       <div class="pagination">
         <button (click)="prevPage()" [disabled]="currentPage === 1">
-          Previous
+          ← Prev
         </button>
-
-        <span>Page {{ currentPage }}</span>
-
+        <span class="page-info">Page {{ currentPage }}</span>
         <button (click)="nextPage()">
-          Next
+          Next →
         </button>
       </div>
-
-    </ul>
+    </div>
   </ng-container>
 
 </section>

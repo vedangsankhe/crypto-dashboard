@@ -1,14 +1,10 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
-import { finalize } from 'rxjs';
-import { Observable } from 'rxjs';
-import { catchError, of } from 'rxjs';
+import { finalize, catchError, of, Observable, debounceTime, distinctUntilChanged } from 'rxjs';
 import { coin } from '../../core/services/models/coin.model';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { WatchlistService } from '../../core/services/watchlist.service';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -17,35 +13,25 @@ import { WatchlistService } from '../../core/services/watchlist.service';
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
   coins$!: Observable<coin[]>;
-
   loading = true;
-
   error: string | null = null;
-
-  searchText = '';
-
   searchControl = new FormControl('');
-
   debouncedSearchText = '';
-
   currentPage = 1;
 
   constructor(
     private apiService: ApiService,
     private watchlistService: WatchlistService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.loadCoins()
+    this.loadCoins();
 
     this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
+      .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe((value) => {
         this.debouncedSearchText = value ?? '';
       });
@@ -56,8 +42,8 @@ export class DashboardComponent {
     this.error = null;
 
     this.coins$ = this.apiService.getCoins(this.currentPage).pipe(
-      catchError((err) => {
-        this.error = 'Failed to load cryptocurrency data. Please try again later.';
+      catchError(() => {
+        this.error = 'Failed to load cryptocurrency data. Please try again.';
         return of([]);
       }),
       finalize(() => {
@@ -66,20 +52,14 @@ export class DashboardComponent {
     );
   }
 
-
   trackById(index: number, coin: coin) {
     return coin.id;
   }
 
   filterCoins(coins: coin[]): coin[] {
-    if (!this.debouncedSearchText) {
-      return coins;
-    }
-
-    return coins.filter((coin) =>
-      coin.name
-        .toLowerCase()
-        .includes(this.debouncedSearchText.toLowerCase())
+    if (!this.debouncedSearchText) return coins;
+    return coins.filter((c) =>
+      c.name.toLowerCase().includes(this.debouncedSearchText.toLowerCase())
     );
   }
 
@@ -95,16 +75,43 @@ export class DashboardComponent {
     }
   }
 
-toggleWatchlist(coin: any) {
-  if (this.watchlistService.isInWatchlist(coin.id)) {
-    this.watchlistService.removeFromWatchlist(coin.id);
-  } else {
-    this.watchlistService.addToWatchlist(coin);
+  toggleWatchlist(coin: any) {
+    if (this.watchlistService.isInWatchlist(coin.id)) {
+      this.watchlistService.removeFromWatchlist(coin.id);
+    } else {
+      this.watchlistService.addToWatchlist(coin);
+    }
   }
-}
 
-isInWatchlist(id: string): boolean {
-  return this.watchlistService.isInWatchlist(id);
-}
+  isInWatchlist(id: string): boolean {
+    return this.watchlistService.isInWatchlist(id);
+  }
 
+  /**
+   * Converts sparkline price array → SVG polyline points string
+   * Scales prices to fit within an 80×32 viewBox
+   */
+  getSparklinePoints(prices: number[] | undefined): string {
+    if (!prices || prices.length < 2) return '';
+
+    // Sample down to ~40 points for performance
+    const step = Math.max(1, Math.floor(prices.length / 40));
+    const sampled = prices.filter((_, i) => i % step === 0);
+
+    const min = Math.min(...sampled);
+    const max = Math.max(...sampled);
+    const range = max - min || 1;
+
+    const width  = 80;
+    const height = 32;
+    const padding = 2;
+
+    return sampled
+      .map((price, i) => {
+        const x = (i / (sampled.length - 1)) * (width - padding * 2) + padding;
+        const y = height - padding - ((price - min) / range) * (height - padding * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(' ');
+  }
 }
