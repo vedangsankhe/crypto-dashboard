@@ -1,18 +1,93 @@
-<section>
-  <h1>Your Watchlist</h1>
+<section class="watchlist">
 
-  <p *ngIf="coins.length === 0">
-    No coins added yet.
-  </p>
+  <!-- Header -->
+  <div class="watchlist__header">
+    <div class="watchlist__title">
+      <h1>Watchlist</h1>
+      <span class="coin-count" *ngIf="coins.length > 0">{{ coins.length }} coins</span>
+    </div>
+    <p>// Your saved cryptocurrencies</p>
+  </div>
 
-  <ul *ngIf="coins.length > 0">
-    <li *ngFor="let coin of coins">
-      <strong>{{ coin.name }}</strong>
-      - ₹{{ coin.current_price }}
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="coins.length === 0">
+    <div class="empty-icon">☆</div>
+    <h2>Nothing here yet</h2>
+    <p>Go to the dashboard and hit <strong>Watch</strong> on any coin to save it here.</p>
+    <a routerLink="/" class="btn-go-dashboard">← Back to Dashboard</a>
+  </div>
 
-      <button (click)="remove(coin.id)">
-        Remove
+  <!-- Cards Grid -->
+  <div class="coins-grid" *ngIf="coins.length > 0">
+    <div class="coin-card" *ngFor="let coin of coins">
+
+      <!-- Card Header -->
+      <div class="coin-card__header">
+        <img [src]="coin.image" [alt]="coin.name" class="coin-logo" />
+        <div class="coin-meta">
+          <span class="coin-name">{{ coin.name }}</span>
+          <span class="coin-symbol">{{ coin.symbol }}</span>
+        </div>
+        <span class="rank-pill">#{{ coin.market_cap_rank }}</span>
+      </div>
+
+      <!-- Price -->
+      <div class="coin-card__price">
+        <span class="price-label">Current Price</span>
+        <span class="price-value">₹{{ coin.current_price | number:'1.2-2' }}</span>
+      </div>
+
+      <!-- 24h Change -->
+      <div class="coin-card__change">
+        <span class="change-label">24h Change</span>
+        <span class="change-badge"
+          [class.positive]="coin.price_change_percentage_24h >= 0"
+          [class.negative]="coin.price_change_percentage_24h < 0">
+          {{ coin.price_change_percentage_24h >= 0 ? '▲' : '▼' }}
+          {{ coin.price_change_percentage_24h | number:'1.2-2' }}%
+        </span>
+      </div>
+
+      <!-- Sparkline -->
+      <div class="coin-card__spark">
+        <svg viewBox="0 0 120 40" preserveAspectRatio="none" class="sparkline">
+          <defs>
+            <linearGradient [id]="'grad-' + coin.id" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"
+                [attr.stop-color]="coin.price_change_percentage_24h >= 0 ? '#63e6be' : '#f87171'"
+                stop-opacity="0.25"/>
+              <stop offset="100%"
+                [attr.stop-color]="coin.price_change_percentage_24h >= 0 ? '#63e6be' : '#f87171'"
+                stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <polygon
+            [attr.points]="getSparklineArea(coin.sparkline_in_7d?.price)"
+            [attr.fill]="'url(#grad-' + coin.id + ')'"
+          />
+          <polyline
+            [attr.points]="getSparklinePoints(coin.sparkline_in_7d?.price)"
+            fill="none"
+            [attr.stroke]="coin.price_change_percentage_24h >= 0 ? '#63e6be' : '#f87171'"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+
+      <!-- Market Cap -->
+      <div class="coin-card__footer">
+        <span class="mcap-label">Market Cap</span>
+        <span class="mcap-value">₹{{ coin.market_cap | number:'1.0-0' }}</span>
+      </div>
+
+      <!-- Remove -->
+      <button class="btn-remove" (click)="remove(coin.id)">
+        ✕ Remove
       </button>
-    </li>
-  </ul>
+
+    </div>
+  </div>
+
 </section>
